@@ -1,22 +1,22 @@
 Feature: The product store service back-end
-    As a Product Store Owner
-    I need a RESTful catalog service
-    So that I can keep track of all my products
+  As a Product Store Owner
+  I need a RESTful catalog service
+  So that I can keep track of all my products
 
-Background:
+  Background:
     Given the following products
-        | name       | description     | price   | available | category   |
-        | Hat        | A red fedora    | 59.95   | True      | CLOTHS     |
-        | Shoes      | Blue shoes      | 120.50  | False     | CLOTHS     |
-        | Big Mac    | 1/4 lb burger   | 5.99    | True      | FOOD       |
-        | Sheets     | Full bed sheets | 87.00   | True      | HOUSEWARES |
+      | name    | description     | price  | available | category   |
+      | Hat     | A red fedora    | 59.95  | True      | CLOTHS     |
+      | Shoes   | Blue shoes      | 120.50 | False     | CLOTHS     |
+      | Big Mac | 1/4 lb burger   | 5.99   | True      | FOOD       |
+      | Sheets  | Full bed sheets | 87.00  | True      | HOUSEWARES |
 
-Scenario: The server is running
+  Scenario: The server is running
     When I visit the "Home Page"
     Then I should see "Product Catalog Administration" in the title
     And I should not see "404 Not Found"
 
-Scenario: Create a Product
+  Scenario: Create a Product
     When I visit the "Home Page"
     And I set the "Name" to "Hammer"
     And I set the "Description" to "Claw hammer"
@@ -39,3 +39,87 @@ Scenario: Create a Product
     And I should see "Tools" in the "Category" dropdown
     And I should see "34.95" in the "Price" field
 
+  Scenario: Read a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "Hammer"
+    And I set the "Description" to "Claw hammer"
+    And I select "True" in the "Available" dropdown
+    And I select "Tools" in the "Category" dropdown
+    And I set the "Price" to "34.95"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Hammer" in the "Name" field
+
+  Scenario: Update a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "Hammer"
+    And I set the "Description" to "Claw hammer"
+    And I select "True" in the "Available" dropdown
+    And I select "Tools" in the "Category" dropdown
+    And I set the "Price" to "34.95"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I change "Name" to "Updated Hammer"
+    And I change "Description" to "Updated hammer description"
+    And I select "False" in the "Available" dropdown
+    And I select "Automotive" in the "Category" dropdown
+    And I change "Price" to "44.95"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    And I should see "Updated Hammer" in the "Name" field
+    And I should see "Updated hammer description" in the "Description" field
+    And I should see "False" in the "Available" dropdown
+    And I should see "Automotive" in the "Category" dropdown
+    And I should see "44.95" in the "Price" field
+
+  Scenario: Delete a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "Hammer"
+    And I set the "Description" to "Claw hammer"
+    And I select "True" in the "Available" dropdown
+    And I select "Tools" in the "Category" dropdown
+    And I set the "Price" to "34.95"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Delete" button
+    Then I should see the message "Product has been Deleted!"
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Product not found"
+    And the "Name" field should be empty
+
+  Scenario: List all Products
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Hat" in the "Name" field
+
+  Scenario: List by Category
+    When I visit the "Home Page"
+    And I select "Food" in the "Category" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Big Mac" in the "Name" field
+    And I should see "Food" in the "Category" dropdown
+
+  Scenario: List by Available
+    When I visit the "Home Page"
+    And I select "False" in the "Available" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Shoes" in the "Name" field
+    And I should see "False" in the "Available" dropdown
+
+  Scenario: List by Name
+    When I visit the "Home Page"
+    And I set the "Name" to "Sheets"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sheets" in the "Name" field
+    And I should see "Full bed sheets" in the "Description" field
